@@ -116,7 +116,6 @@
 </div>
 
 <script>
-  const card = document.getElementById("card");
   const buttonArea = document.getElementById("buttonArea");
   const noBtn = document.getElementById("no");
   const yesBtn = document.getElementById("yes");
@@ -157,6 +156,7 @@
         noRect.top > yesRect.bottom;
     }
 
+    noBtn.style.position = "absolute";
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
 
@@ -169,24 +169,12 @@
     tease.timer = setTimeout(() => tease.style.opacity = 0, 900);
   }
 
-  // FIRST CLICK: activate escape
   noBtn.addEventListener("click", (e) => {
-    if (!escapeMode) {
-      escapeMode = true;
-
-      // detach from flex layout
-      noBtn.style.position = "absolute";
-      noBtn.style.left = noBtn.offsetLeft + "px";
-      noBtn.style.top = noBtn.offsetTop + "px";
-
-      moveNo();
-      return;
-    }
     e.preventDefault();
+    escapeMode = true;
     moveNo();
   });
 
-  // After activation → hover & touch
   ["mouseenter", "touchstart"].forEach(evt => {
     noBtn.addEventListener(evt, e => {
       if (!escapeMode) return;
@@ -195,7 +183,6 @@
     });
   });
 
-  // YES FLOW (unchanged)
   yesBtn.addEventListener("click", () => {
     alert("Yayyy! 💖");
   });
