@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siddaa 💖 Valentine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #ffb6c1, #ffd6e0);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .card {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    min-height: 350px;
+    padding: 30px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    position: relative;
+  }
+
+  h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 28px;
+    color: #ff4d6d;
+  }
+
+  .forever {
+    color: #ff2f5b;
+    text-shadow: 0 0 8px #ff9eb3, 0 0 20px #ff4d6d;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 6px #ff9eb3; }
+    to { text-shadow: 0 0 25px #ff2f5b; }
+  }
+
+  .emoji {
+    font-size: 46px;
+    margin: 15px 0;
+  }
+
+  .buttons {
+    margin-top: 25px;
+    position: relative;
+    height: 140px;
+  }
+
+  button {
+    padding: 12px 26px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    position: absolute;
+    z-index: 2;
+  }
+
+  #yes {
+    background: #ff4d6d;
+    color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+    z-index: 3;
+  }
+
+  #no {
+    background: #ccc;
+    color: #333;
+    top: 0;
+    left: 10%;
+    z-index: 4;
+  }
+
+  #tease {
+    margin-top: 10px;
+    font-style: italic;
+    color: #ff6f91;
+    opacity: 0;
+    transition: opacity 0.2s;
+    min-height: 22px;
+  }
+
+  .option {
+    margin: 10px;
+    background: #ffe0e6;
+    color: #ff4d6d;
+    font-weight: 500;
+  }
+
+  input {
+    width: 90%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    margin-top: 15px;
+    font-size: 16px;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card" id="app">
+
+  <h1>
+    Will you be Siddaa’s Valentine
+    <span class="forever">forever</span>? 💖
+  </h1>
+
+  <div class="emoji">🧸</div>
+
+  <div class="buttons" id="buttonArea">
+    <button id="no">No</button>
+    <button id="yes">Yes</button>
+  </div>
+
+  <p id="tease">Nice try 😏</p>
+
+</div>
+
+<script>
+  const app = document.getElementById("app");
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const tease = document.getElementById("tease");
+  const buttonArea = document.getElementById("buttonArea");
+
+  const messages = [
+    "Nice try 😏",
+    "Almost 😜",
+    "Not happening 😌",
+    "You’re persistent 🤭",
+    "Missed me again 💃",
+    "Too slow 😎"
+  ];
+
+  function moveNo() {
+    const areaRect = buttonArea.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    let x, y, safe = false;
+
+    // 🔁 keep trying until safe position found
+    while (!safe) {
+      x = Math.random() * (areaRect.width - noBtn.offsetWidth);
+      y = Math.random() * (areaRect.height - noBtn.offsetHeight - 50);
+
+      const noFutureRect = {
+        left: areaRect.left + x,
+        right: areaRect.left + x + noBtn.offsetWidth,
+        top: areaRect.top + y,
+        bottom: areaRect.top + y + noBtn.offsetHeight
+      };
+
+      // prevent overlap with YES
+      safe =
+        noFutureRect.right < yesRect.left ||
+        noFutureRect.left > yesRect.right ||
+        noFutureRect.bottom < yesRect.top ||
+        noFutureRect.top > yesRect.bottom;
+    }
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    // 📳 vibration
+    if (navigator.vibrate) navigator.vibrate(40);
+
+    // 😜 teasing text ALWAYS
+    tease.innerText = messages[Math.floor(Math.random() * messages.length)];
+    tease.style.opacity = 1;
+    clearTimeout(tease.timer);
+    tease.timer = setTimeout(() => tease.style.opacity = 0, 900);
+  }
+
+  // 🔁 infinite escape loop (ALL events)
+  ["mouseenter", "touchstart", "click"].forEach(evt => {
+    noBtn.addEventListener(evt, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      moveNo();
+    });
+  });
+
+  // YES FLOW
+  yesBtn.addEventListener("click", () => {
+    app.innerHTML = `
+      <h1>Date Time ☕🎬</h1>
+      <div class="emoji">💑</div>
+      <p>Will it be a Café Date or a Movie Date?</p>
+      <button class="option" onclick="showCafe()">☕ Café Date</button>
+      <button class="option" onclick="showMovie()">🎬 Movie Date</button>
+    `;
+  });
+
+  function showCafe() {
+    app.innerHTML = `
+      <h1>Café Date ☕</h1>
+      <div class="emoji">🧁☕</div>
+      <p>Which café do you want to go to?</p>
+      <input id="cafeName" placeholder="Type café name..." />
+      <br><br>
+      <button class="option" onclick="confirmCafe()">Confirm 💖</button>
+    `;
+  }
+
+  function confirmCafe() {
+    const cafe = document.getElementById("cafeName").value || "our favourite café";
+    app.innerHTML = `
+      <h1>Perfect Choice 💕</h1>
+      <div class="emoji">☕🧸</div>
+      <p>Let’s meet at <b>${cafe}</b> and make memories ✨</p>
+    `;
+  }
+
+  function showMovie() {
+    app.innerHTML = `
+      <h1>Movie Date 🎬</h1>
+      <div class="emoji">🍿🎥</div>
+      <p>Which movie should we watch?</p>
+      <input id="movieName" placeholder="Type movie name..." />
+      <br><br>
+      <button class="option" onclick="confirmMovie()">Book Tickets 🎟️</button>
+    `;
+  }
+
+  function confirmMovie() {
+    const movie = document.getElementById("movieName").value || "a romantic movie";
+    app.innerHTML = `
+      <h1>Movie Night 💖</h1>
+      <div class="emoji">🎬🍿</div>
+      <p>Tickets booked for <b>${movie}</b> 😍</p>
+    `;
+  }
+</script>
+
+</body>
+</html>
